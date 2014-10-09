@@ -1,0 +1,103 @@
+###############################
+# Aroma Theme
+###############################
+
+ini_set("force_colorspace","rgba");
+
+theme("ics");
+
+#ini_set("dp","5");
+
+###############################
+# Welcome Splash
+###############################
+
+splash(4000, "nae");
+
+###############################
+# Font Size
+###############################
+
+loadlang("langs/en.lang");
+fontresload( "0", "ttf/Roboto-Regular.ttf;ttf/DroidSansFallback.ttf;", "8" );
+fontresload( "1", "ttf/Roboto-Regular.ttf;ttf/DroidSansFallback.ttf;", "12" );
+
+###############################
+# Name Variables
+###############################
+
+ini_set("rom_name",             "NegaLite Kernel NG2");
+ini_set("rom_version",          "SVN Series");
+ini_set("rom_author",           "Negamann303");
+ini_set("rom_device",           "Galaxy S4");
+
+###############################
+# Aroma Script by Negamann303
+###############################
+#------------------------------
+###############################
+# Welcome Screen
+###############################
+
+viewbox(
+	"Welcome",
+	"\n\n\n\n\n"+
+	"You Are About To Flash\n"+
+	ini_get("rom_name") + " \nBy\n" + ini_get("rom_author") +
+	"\n\n\n"+
+	"Version: <#080>" + ini_get("rom_version") + "</#>\n"+
+	"Device: <#080>" + ini_get("rom_device") + "</#>\n\n\n"+
+	"Press Next To Continue The Installation...",
+	"icons/personalize"
+);
+
+###############################
+# END
+###############################
+
+
+###############################
+# END
+###############################
+#------------------------------
+###############################
+# Performance Options
+###############################
+
+appendvar("installmsg","\n\nPlease Select Performance Settings Below:");
+
+selectbox(
+	"Performance Selection:",
+	"Choose Which Preference You Would Like",
+	"icons/performance",
+	"performance.prop",
+
+	"Low Performance","Good Performance - 1.89GHz",0,
+	"Mixed Performance","Better Performance - 1.94GHz",1,
+	"High Performance","Best Performance - 2.1GHz",0
+);
+
+###############################
+# Install Rom - Execute Updater-Script
+###############################
+
+install(
+	"Installing",
+	"Please Wait...",
+	"icons/install",
+	"Finished, Press 'Next'"
+);
+
+ini_set("text_next", "Done");
+
+viewbox(
+	"Installation Completed",
+	"<#080>Congratulations...</#>\n\n"+
+	ini_get("rom_name") + " " + ini_get("rom_version") + " Has Been Installed Successfully.\n\n"+
+	"Enjoy!",
+	"icons/info"
+);
+
+ini_set("text_next", "Finished");
+
+

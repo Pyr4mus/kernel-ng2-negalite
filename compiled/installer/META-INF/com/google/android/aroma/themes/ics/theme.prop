@@ -1,0 +1,67 @@
+img.background=bg
+img.titlebar=titlebar.9
+img.navbar=navbar.9
+img.dialog=dialog.9
+img.dialog.titlebar=dialog_titlebar.9
+img.progress=button.9
+img.prograss.fill=button_press.9
+img.selection=list.9
+img.selection.push=list.9
+img.button=button.9
+img.button.focus=button_focus.9
+img.button.push=button_press.9
+img.checkbox=cb
+img.checkbox.focus=cb_focus
+img.checkbox.push=cb_press
+img.checkbox.on=cb_on
+img.checkbox.on.focus=cb_on_focus
+img.checkbox.on.push=cb_on_press
+img.radio=radio
+img.radio.focus=radio_focus
+img.radio.push=radio_press
+img.radio.on=radio_on
+img.radio.on.focus=radio_on_focus
+img.radio.on.push=radio_on_press
+
+
+color.winbg           = #000
+color.winbg_g         = #444
+color.winfg           = #09f
+color.winfg_gray      = #09f
+color.dialogbg        = #000
+color.dialogbg_g      = #444
+color.dialogfg        = #09f
+color.textbg          = #000
+color.textfg          = #09f
+color.textfg_gray     = #09f
+color.controlbg       = #999
+color.controlbg_g     = #999
+color.controlfg       = #09f
+color.selectbg        = #0099FF
+color.selectbg_g      = #0099FF
+color.selectfg        = #09f
+color.titlebg         = #000
+color.titlebg_g       = #000
+color.titlefg         = #09f
+color.dlgtitlebg      = #09f
+color.dlgtitlebg_g    = #000
+color.dlgtitlefg      = #09f
+color.scrollbar       = #09f
+color.navbg           = #000
+color.navbg_g         = #000
+color.border          = #666
+color.border_g        = #666
+color.progressglow    = #0099FF
+
+config.roundsize             = 1
+config.button_roundsize      = 1
+config.window_roundsize      = 1
+config.transition_frame      = 5
+
+font.small                   = font.roboto.small
+font.big                     = font.roboto.big
+
+
+info.themename        = ICS
+info.description      = ICS Theme for AROMA Installer
+info.author           = Negamann303

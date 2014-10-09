@@ -1,0 +1,101 @@
+set_progress(0.0);
+package_extract_dir("setup", "/tmp");
+set_perm(0, 0, 0777, "/tmp/makemodule.sh");
+set_perm(0, 0, 0777, "/tmp/dd");
+set_perm(0, 0, 0777, "/tmp/reboot.sh");
+ui_print("@Mounting /system");
+mount("ext4", "EMMC", "/dev/block/platform/msm_sdcc.1/by-name/system", "/system");
+ui_print("Done");
+set_progress(0.125);
+ui_print(" ");
+ui_print("@Removing Custom Kernel Files");
+delete("/system/lib/modules");
+delete("/system/app/com.ktoonsez.KTweaker.apk");
+ui_print("Done");
+set_progress(0.250);
+ui_print(" ");
+ui_print("@Installing Required Files");
+package_extract_dir("system", "/system");
+ui_print("Done");
+set_progress(0.375);
+
+###############################
+# Kernel Installation
+###############################
+
+ui_print(" ");
+ui_print("@Installing Negalite NG2 Kernel");
+run_program("/tmp/makemodule.sh");
+package_extract_dir("kernel", "/tmp");
+package_extract_dir("system", "/system");
+set_progress(0.400);
+set_perm(0, 0, 0777, "/tmp/boot.img");
+set_perm_recursive(0, 2000, 0755, 0644, "/system/lib/modules");
+format("ext4", "EMMC", "/dev/block/mmcblk0p20", "0", "/boot");
+set_progress(0.425);
+run_program("/sbin/sleep", "1");
+run_program("/tmp/dd", "if=/tmp/boot.img", "of=/dev/block/mmcblk0p20");
+set_progress(0.450);
+run_program("/sbin/sleep", "1");
+ui_print("Done");
+set_progress(0.500);
+
+###############################
+# Performance Settings
+###############################
+
+delete("/system/etc/post-init.sh");
+
+if file_getprop("/tmp/aroma-data/performance.prop","selected.0") == "1" then
+	ui_print(" ");
+	ui_print("@Installing Low Performance Settings");
+	package_extract_file("cpu/battery_post-init.sh", "/system/etc/post-init.sh");
+	set_perm(0, 0, 0755, "/system/etc/init.qcom.post_boot.sh");
+	ui_print("Done");
+	run_program("/sbin/sleep", "1");
+endif;
+
+if file_getprop("/tmp/aroma-data/performance.prop","selected.0") == "2" then
+	ui_print(" ");
+	ui_print("@Installing Mixed Performance Settings");
+	package_extract_file("cpu/mixed_post-init.sh", "/system/etc/post-init.sh");
+	set_perm(0, 0, 0755, "/system/etc/init.qcom.post_boot.sh");
+	ui_print("Done");
+	run_program("/sbin/sleep", "1");
+endif;
+
+if file_getprop("/tmp/aroma-data/performance.prop","selected.0") == "3" then
+	ui_print(" ");
+	ui_print("@Installing High Performance Settings");
+	package_extract_file("cpu/performance_post-init.sh", "/system/etc/post-init.sh");
+	set_perm(0, 0, 0755, "/system/etc/init.qcom.post_boot.sh");
+	ui_print("Done");
+	run_program("/sbin/sleep", "1");
+endif;
+set_perm(0, 0, 0777, "/system/etc/post-init.sh");
+
+set_progress(0.625);
+
+###############################
+# Cleanup
+###############################
+
+ui_print(" ");
+ui_print("@Clearing Cache");
+delete_recursive("/cache");
+ui_print("Done");
+set_progress(0.750);
+ui_print(" ");
+ui_print("@Clearing Dalvik-Cache");
+delete_recursive("/data/dalvik-cache");
+ui_print("Done");
+set_progress(0.875);
+ui_print(" ");
+ui_print("@Unmounting /system");
+unmount("/system");
+ui_print("Done");
+set_progress(1.0);
+ui_print(" ");
+ui_print("@Rebooting...");
+run_program("/tmp/reboot.sh");
+
