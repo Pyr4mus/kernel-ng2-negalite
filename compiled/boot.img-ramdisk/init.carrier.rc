@@ -104,10 +104,10 @@ service rtccd /system/bin/rtccd3 -a 700M
     user root
     oneshot
 
-#on post-fs-data
+on post-fs-data
     # ItsOn property
-#    start itsonbs
+    start itsonbs
 
-#service itsonbs /system/vendor/itson/itson-bootstrapper.sh
-#    oneshot
-#    critical
+service itsonbs /system/vendor/itson/itson-bootstrapper.sh
+    oneshot
+    critical

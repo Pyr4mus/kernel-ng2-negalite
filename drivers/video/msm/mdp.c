@@ -2432,11 +2432,6 @@ static int mdp_on(struct platform_device *pdev)
 		mdp_clk_ctrl(1);
 		mdp_bus_scale_restore_request();
 
-		if(mfd->cont_splash_done)
-		{
-			mdp4_sw_reset(0x17);
-		}
-
 		mdp4_hw_init();
 
 		/* Initialize HistLUT to last LUT */

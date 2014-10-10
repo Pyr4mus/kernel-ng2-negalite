@@ -1791,12 +1791,26 @@ static void sec_bat_monitor_work(
 	struct sec_battery_info *battery =
 		container_of(work, struct sec_battery_info,
 		monitor_work);
+	static struct timespec old_ts;
+	struct timespec c_ts;
 
 	dev_dbg(battery->dev, "%s: Start\n", __func__);
 
+	c_ts = ktime_to_timespec(alarm_get_elapsed_realtime());
+
 	/* monitor once after wakeup */
-	if (battery->polling_in_sleep)
+	if (battery->polling_in_sleep) {
 		battery->polling_in_sleep = false;
+		if (battery->status == POWER_SUPPLY_STATUS_DISCHARGING) {
+			if ((unsigned long)(c_ts.tv_sec - old_ts.tv_sec) < 10 * 60) {
+				pr_info("Skip monitor_work(%ld)\n",
+						c_ts.tv_sec - old_ts.tv_sec);
+				goto skip_monitor;
+			}
+		}
+	}
+	/* update last monitor time */
+	old_ts = c_ts;
 
 	sec_bat_get_battery_info(battery);
 
@@ -1848,6 +1862,7 @@ continue_monitor:
 #endif
 	power_supply_changed(&battery->psy_bat);
 
+skip_monitor:
 	sec_bat_set_polling(battery);
 
 	/* check muic cable status */

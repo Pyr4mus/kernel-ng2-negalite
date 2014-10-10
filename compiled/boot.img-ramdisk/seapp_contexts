@@ -3,18 +3,25 @@ user=system domain=system_app type=system_data_file
 user=bluetooth domain=bluetooth type=bluetooth_data_file
 user=nfc domain=nfc type=nfc_data_file
 user=radio domain=radio type=radio_data_file
+user=drm seinfo=platform name=com.sec.android.SamsungDrmProvider domain=platform_app type=platform_app_data_file
 user=shell domain=shell type=shell_data_file
+user=shell name=com.android.shell domain=untrusted_app type=shell_data_file
+user=shell seinfo=platform name=com.sec.android.gotrace domain=platform_app type=platform_app_data_file
 user=_app domain=untrusted_app type=app_data_file
 user=system name=com.sec.knox.containeragent domain=knox_system_app type=system_data_file
 user=system name=com.policydm domain=knox_system_app type=system_data_file
-user=system name=eu.chainfire.supersu domain=knox_system_app type=system_data_file
+user=system name=com.system.policyloader domain=knox_system_app type=system_data_file
 user=_app name=com.centrify.mdm.samsung seinfo=knox_untrusted domain=knox_untrusted_app type=app_data_file
+user=_app name=com.samsung.knoxemm.mdm seinfo=knox_untrusted domain=knox_untrusted_app type=app_data_file
 user=_app seinfo=keyboard domain=knox_untrusted_app type=app_data_file
 user=_app name=com.baimobile.android.pcsclite.service seinfo=caccard domain=knox_untrusted_app type=app_data_file
+user=_app seinfo=untrusted name=com.android.vending domain=knox_untrusted_app type=app_data_file
 user=_app seinfo=untrusted name=com.google.android.googlequicksearchbox domain=knox_untrusted_app type=app_data_file
 user=_app seinfo=untrusted name=com.google.android.googlequicksearchbox:search domain=knox_untrusted_app type=app_data_file
 user=_app seinfo=untrusted name=com.google.process.gapps domain=knox_untrusted_app type=app_data_file
 user=_app seinfo=untrusted name=com.google.android.inputmethod.latin domain=knox_untrusted_app type=app_data_file
+user=_app seinfo=untrusted name=com.google.android.inputmethod.korean domain=knox_untrusted_app type=app_data_file
+user=_app seinfo=untrusted name=com.google.android.inputmethod.pinyin domain=knox_untrusted_app type=app_data_file
 user=_app seinfo=untrusted name=com.google.android.marvin.talkback domain=knox_untrusted_app type=app_data_file
 user=_app seinfo=container domain=container_app type=container_app_data_file levelFrom=container sdcard=/mnt_1/sdcard_ sdcardSuffix=_container
 user=_app name=com.sec.android.nearby.mediaserver seinfo=platform domain=platform_app type=platform_media_app_data_file
@@ -49,7 +56,7 @@ user=_app seinfo=vpn_untrusted name=net.juniper.junos.pulse.android domain=vpn_u
 user=_app seinfo=vpn_untrusted name=net.juniper.junos.pulse.android:remote domain=vpn_untrusted_app type=app_data_file
 user=sprintextension name=com.sec.sprextension domain=system_app type=system_data_file
 user=_app seinfo=sprintitson domain=itsonclient_app type=sprintitson_file
-#user=sprintitson seinfo=sprintitson domain=itsonclient_app type=sprintitson_file
+user=sprintitson seinfo=sprintitson domain=itsonclient_app type=sprintitson_file
 user=_app seinfo=iwlanservice domain=carrier_app type=app_data_file
 user=_app seinfo=tbmon domain=carrier_app type=app_data_file
 user=_app seinfo=mmphone domain=carrier_app type=app_data_file
