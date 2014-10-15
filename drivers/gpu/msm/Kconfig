@@ -97,6 +97,11 @@ config MSM_KGSL_DISABLE_SHADOW_WRITES
 	default n
 	depends on MSM_KGSL
 
+config KGSL_GPUOC
+	bool "Enable MSM KGSL GPU Overclocking to 533MHz"
+	default n
+	depends on MSM_KGSL
+
 config MSM_KGSL_FPS_NODE_ENABLE
 	bool "Enable FPS node to check FPS"
 	default n
