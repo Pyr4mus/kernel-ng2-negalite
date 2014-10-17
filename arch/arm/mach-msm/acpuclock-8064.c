@@ -101,12 +101,15 @@ static struct scalable scalable[] __initdata = {
  * We rely on the RPM rounding requests up here.
 */
 static struct msm_bus_paths bw_level_tbl[] __initdata = {
-	[0] =  BW_MBPS(640), /* At least  80 MHz on bus. */
+	[0] =  BW_MBPS(528), /* At least  66 MHz on bus. */
 	[1] = BW_MBPS(1064), /* At least 133 MHz on bus. */
 	[2] = BW_MBPS(1600), /* At least 200 MHz on bus. */
 	[3] = BW_MBPS(2128), /* At least 266 MHz on bus. */
 	[4] = BW_MBPS(3200), /* At least 400 MHz on bus. */
 	[5] = BW_MBPS(4264), /* At least 533 MHz on bus. */
+	[6] = BW_MBPS(4800), /* At least 600 MHz on bus. */
+	[7] = BW_MBPS(6128), /* At least 766 MHz on bus. */
+	[8] = BW_MBPS(6400), /* At least 800 MHz on bus. */
 };
 
 static struct msm_bus_scale_pdata bus_scale_data __initdata = {
@@ -551,6 +554,8 @@ static struct acpu_level tbl_PVS3_2000MHz[] __initdata = {
 	{ 1, {  1458000, HFPLL, 1, 0x36 }, L2(14), 1025000 },
 	{ 1, {  1566000, HFPLL, 1, 0x3A }, L2(14), 1050000 },
 	{ 1, {  1674000, HFPLL, 1, 0x3E }, L2(14), 1087500 },
+
+
 	{ 1, {  1782000, HFPLL, 1, 0x42 }, L2(14), 1137500 },
 	{ 1, {  1890000, HFPLL, 1, 0x46 }, L2(14), 1175000 },
 	{ 0, { 0 } }
@@ -628,12 +633,12 @@ static struct pvs_table pvs_tables[NUM_SPEED_BINS][NUM_PVS] __initdata = {
 	[1][6] = { tbl_PVS6_1700MHz, sizeof(tbl_PVS6_1700MHz),     25000 },
 
 	[2][0] = { tbl_PVS0_2000MHz, sizeof(tbl_PVS0_2000MHz),     0 },
-	[2][1] = { tbl_PVS1_2000MHz, sizeof(tbl_PVS1_2000MHz),     25000 },
-	[2][2] = { tbl_PVS2_2000MHz, sizeof(tbl_PVS2_2000MHz),     25000 },
-	[2][3] = { tbl_PVS3_2000MHz, sizeof(tbl_PVS3_2000MHz),     25000 },
-	[2][4] = { tbl_PVS4_2000MHz, sizeof(tbl_PVS4_2000MHz),     25000 },
-	[2][5] = { tbl_PVS5_2000MHz, sizeof(tbl_PVS5_2000MHz),     25000 },
-	[2][6] = { tbl_PVS6_2000MHz, sizeof(tbl_PVS6_2000MHz),     25000 },
+	[2][1] = { tbl_PVS1_2000MHz, sizeof(tbl_PVS1_2000MHz),     0 },
+	[2][2] = { tbl_PVS2_2000MHz, sizeof(tbl_PVS2_2000MHz),     0 },
+	[2][3] = { tbl_PVS3_2000MHz, sizeof(tbl_PVS3_2000MHz),     0 },
+	[2][4] = { tbl_PVS4_2000MHz, sizeof(tbl_PVS4_2000MHz),     0 },
+	[2][5] = { tbl_PVS5_2000MHz, sizeof(tbl_PVS5_2000MHz),     0 },
+	[2][6] = { tbl_PVS6_2000MHz, sizeof(tbl_PVS6_2000MHz),     0 },
 
 	[14][0] = { tbl_PVS0_1512MHz, sizeof(tbl_PVS0_1512MHz),     0 },
 	[14][1] = { tbl_PVS1_1512MHz, sizeof(tbl_PVS1_1512MHz),     25000 },
