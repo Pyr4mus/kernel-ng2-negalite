@@ -54,6 +54,9 @@ if [ -e /sys/kernel/dyn_fsync/Dyn_fsync_active ]; then
 	echo $DYN_FSYNC > /sys/kernel/dyn_fsync/Dyn_fsync_active
 fi
 
+# Intelli-Plug
+INTELLI_PLUG="On" #choices: [On, Off]
+
 # Auto HotPlug
 AUTO_PLUG="On"  #choices: [On, Off]
 
@@ -80,6 +83,13 @@ echo "1" > /sys/devices/virtual/sec/tsp/panel_colors
 echo "1" > /sys/class/sec/led/led_fade
 echo "1" > /sys/class/sec/led/led_fade_charging
 echo "255" > /sys/class/sec/led/led_intensity
+
+# Intelli-Plug
+if [ $INTELLI_PLUG = "On" ]; then
+	echo "1" > /sys/module/intelli_plug/parameters/intelli_plug_active
+else
+	echo "0" > /sys/module/intelli_plug/parameters/intelli_plug_active
+fi
 
 # Auto HotPlug
 if [ $AUTO_PLUG = "On" ]; then

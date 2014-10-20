@@ -175,6 +175,11 @@ on boot
 # import cne init file
 # on post-fs
 #   export LD_PRELOAD /system/lib/libNimsWrap.so
+    # Increase max readahead size to 256 KB
+    write /sys/block/mmcblk0/queue/read_ahead_kb 256
+    # for controlling write performance boosting
+    chown system radio /sys/block/mmcblk0/bkops_en
+    chmod 0664 /sys/block/mmcblk0/bkops_en
 
 # msm specific files that need to be created on /data
 on post-fs-data
@@ -627,6 +632,8 @@ service wifi-crda /system/bin/sh /system/etc/init.crda.sh
 
 on property:sys.boot_completed=1
     start qcom-post-boot
+    # disable led once boot is complete
+    write /sys/class/sec/led/led_pattern 0
 
 service atfwd /system/bin/ATFWD-daemon
     class late_start
