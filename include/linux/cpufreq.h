@@ -23,6 +23,10 @@
 
 #define CPUFREQ_NAME_LEN 16
 
+extern int GLOBAL_MIN_FREQ_LIMIT;
+extern int GLOBAL_MAX_FREQ_LIMIT;
+extern int GLOBAL_SLEEP_MIN_FREQ_LIMIT;
+extern int GLOBAL_SLEEP_MAX_FREQ_LIMIT;
 
 /*********************************************************************
  *                     CPUFREQ NOTIFIER INTERFACE                    *
