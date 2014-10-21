@@ -1830,6 +1830,12 @@ config LOW_CPUCLOCKS
 	help
 	  Ultra low cpu frequencies enabled for CPU and L2 Cache
 
+config HIGH_CPUCLOCKS
+	bool "Enable ultra high CPU clocks"
+	default n
+	help
+	  Ultra high cpu frequencies enabled for CPU and L2 Cache
+
 config INTELLI_PLUG
 	bool "Enable intelli-plug cpu hotplug driver"
 	default n
@@ -1844,6 +1850,7 @@ config MSM_CPUFREQ_LIMITER
 	  To compile this driver as a module, choose M here: the
 	  module will be called cpufreq_stats.
 	  If in doubt, say N.
+
 config CPU_VOLTAGE_TABLE
 	bool "Enable CPU Voltage Table via sysfs for adjustements"
 	default n
