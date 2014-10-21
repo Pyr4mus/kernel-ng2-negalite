@@ -144,7 +144,8 @@ esac
 echo 10 > /sys/devices/platform/msm_sdcc.3/idle_timeout
 
 
-start thermal-engine
+start thermald
+#start thermal-engine
 #start mpdecision
 
 #fastrpc permission setting

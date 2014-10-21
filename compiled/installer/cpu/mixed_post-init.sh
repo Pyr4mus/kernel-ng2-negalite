@@ -87,8 +87,10 @@ echo "255" > /sys/class/sec/led/led_intensity
 # Intelli-Plug
 if [ $INTELLI_PLUG = "On" ]; then
 	echo "1" > /sys/module/intelli_plug/parameters/intelli_plug_active
+	echo "1" > /sys/module/intelli_plug/parameters/eco_mode_active
 else
 	echo "0" > /sys/module/intelli_plug/parameters/intelli_plug_active
+	echo "0" > /sys/module/intelli_plug/parameters/eco_mode_active
 fi
 
 # Auto HotPlug
