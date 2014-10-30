@@ -37,10 +37,27 @@ int GLOBAL_MAX_FREQ_LIMIT = 1890000;
 int GLOBAL_SLEEP_MIN_FREQ_LIMIT = 378000;
 int GLOBAL_SLEEP_MAX_FREQ_LIMIT = 702000;
 
+static unsigned int vfreq_lock = 0;
+static bool vfreq_lock_tempOFF = false;
 extern ssize_t get_gpu_vdd_levels_str(char *buf);
 extern void set_gpu_vdd_levels(int uv_tbl[]);
+static bool Lonoff = false;
+static unsigned int Lscreen_off_scaling_enable = 0;
+static unsigned int Lscreen_off_scaling_mhz = 1890000;
+static unsigned int Lscreen_off_scaling_mhz_orig = 1890000;
+static unsigned long Lscreen_off_GPU_mhz = 0;
+
+static bool call_in_progress=false;
+static unsigned int Ldisable_som_call_in_progress = 0;
+static char scaling_governor_screen_off_sel[16];
+static char scaling_governor_screen_off_sel_prev[16];
+static char scaling_sched_screen_off_sel[16];
+static char scaling_sched_screen_off_sel_prev[16];
+extern int elevator_change_relay(const char *name, int screen_status);
+
 #ifdef CONFIG_ARM_AUTO_HOTPLUG
 static unsigned int Lenable_auto_hotplug = 0;
+extern void set_max_gpuclk_so(unsigned long val);
 extern void apenable_auto_hotplug(bool state);
 #endif
 
@@ -470,6 +487,89 @@ ssize_t store_GPU_mV_table(struct cpufreq_policy *policy, const char *buf, size_
 	set_gpu_vdd_levels(u);
 	return count;
 }
+
+static ssize_t show_screen_off_scaling_enable(struct cpufreq_policy *policy, char *buf)
+{
+	return sprintf(buf, "%u\n", Lscreen_off_scaling_enable);
+}
+
+static ssize_t store_screen_off_scaling_enable(struct cpufreq_policy *policy,
+					const char *buf, size_t count)
+{
+	unsigned int value = 0;
+	unsigned int ret;
+	ret = sscanf(buf, "%u", &value);
+	if (value > 1)
+	    value = 1;
+	Lscreen_off_scaling_enable = value;
+	return count;
+}
+
+static ssize_t show_screen_off_scaling_mhz(struct cpufreq_policy *policy, char *buf)
+{
+	return sprintf(buf, "%u\n", Lscreen_off_scaling_mhz);
+}
+
+static ssize_t store_screen_off_scaling_mhz(struct cpufreq_policy *policy,
+					const char *buf, size_t count)
+{
+	unsigned int value = 0;
+	unsigned int ret;
+	ret = sscanf(buf, "%u", &value);
+	if (value > GLOBAL_SLEEP_MAX_FREQ_LIMIT)
+		value = GLOBAL_SLEEP_MAX_FREQ_LIMIT;
+	if (value < GLOBAL_SLEEP_MIN_FREQ_LIMIT)
+		value = GLOBAL_SLEEP_MIN_FREQ_LIMIT;
+	Lscreen_off_scaling_mhz = value;
+	return count;
+}
+
+static ssize_t show_screen_off_GPU_mhz(struct cpufreq_policy *policy, char *buf)
+{
+	return sprintf(buf, "%ld\n", Lscreen_off_GPU_mhz);
+}
+
+static ssize_t store_screen_off_GPU_mhz(struct cpufreq_policy *policy,
+					const char *buf, size_t count)
+{
+	unsigned long value = 0;
+	unsigned int ret;
+	ret = sscanf(buf, "%ld", &value);
+	if (value > 500000000)
+		value = 500000000;
+	if (value < 128000000 && value != 0)
+		value = 128000000;
+	Lscreen_off_GPU_mhz = value;
+	return count;
+}
+static ssize_t show_scaling_governor_screen_off(struct cpufreq_policy *policy, char *buf)
+{
+	return scnprintf(buf, 16, "%s\n",
+				scaling_governor_screen_off_sel);
+}
+
+static ssize_t store_scaling_governor_screen_off(struct cpufreq_policy *policy,
+					const char *buf, size_t count)
+{
+	unsigned int ret = -EINVAL;
+	ret = sscanf(buf, "%15s", scaling_governor_screen_off_sel);
+	return count;
+}
+
+static ssize_t show_scaling_sched_screen_off(struct cpufreq_policy *policy, char *buf)
+{
+	return scnprintf(buf, 16, "%s\n",
+				scaling_sched_screen_off_sel);
+}
+
+static ssize_t store_scaling_sched_screen_off(struct cpufreq_policy *policy,
+					const char *buf, size_t count)
+{
+	unsigned int ret = -EINVAL;
+	ret = sscanf(buf, "%15s", scaling_sched_screen_off_sel);
+	return count;
+}
+
 /**
  * show_cpuinfo_cur_freq - current CPU frequency as detected by hardware
  */
@@ -662,6 +762,26 @@ static ssize_t store_enable_auto_hotplug(struct cpufreq_policy *policy,
 }
 #endif
 
+static ssize_t show_freq_lock(struct cpufreq_policy *policy, char *buf)
+{
+	return sprintf(buf, "%u\n", vfreq_lock);
+}
+static ssize_t store_freq_lock(struct cpufreq_policy *policy,
+					const char *buf, size_t count)
+{
+	unsigned int value = 0;
+	unsigned int ret;
+	ret = sscanf(buf, "%u", &value);
+	if (value > 1)
+		value = 1;
+	if (value == 0)
+		vfreq_lock_tempOFF = false;
+
+	vfreq_lock = value;
+
+	return count;
+}
+
 #ifdef CONFIG_CPU_VOLTAGE_TABLE
 
 extern ssize_t acpuclk_get_vdd_levels_str(char *buf);
@@ -724,6 +844,23 @@ static ssize_t store_vdd_levels(struct kobject *a, struct attribute *b, const ch
 
 #endif	/* CONFIG_CPU_VOLTAGE_TABLE */
 
+static ssize_t show_disable_som_call_in_progress(struct cpufreq_policy *policy, char *buf)
+{
+	return sprintf(buf, "%u\n", Ldisable_som_call_in_progress);
+}
+static ssize_t store_disable_som_call_in_progress(struct cpufreq_policy *policy, const char *buf, size_t count)
+{
+	unsigned int value = 0;
+	unsigned int ret;
+	ret = sscanf(buf, "%u", &value);
+	if (value > 1)
+		value = 1;
+	if (value < 0)
+		value = 0;
+	Ldisable_som_call_in_progress = value;
+
+	return count;
+}
 cpufreq_freq_attr_ro_perm(cpuinfo_cur_freq, 0400);
 cpufreq_freq_attr_ro(cpuinfo_min_freq);
 cpufreq_freq_attr_ro(cpuinfo_max_freq);
@@ -739,7 +876,14 @@ cpufreq_freq_attr_rw(scaling_min_freq);
 cpufreq_freq_attr_rw(scaling_max_freq);
 cpufreq_freq_attr_rw(scaling_governor);
 cpufreq_freq_attr_rw(scaling_setspeed);
+cpufreq_freq_attr_rw(freq_lock);
 cpufreq_freq_attr_rw(GPU_mV_table);
+cpufreq_freq_attr_rw(screen_off_scaling_enable);
+cpufreq_freq_attr_rw(screen_off_scaling_mhz);
+cpufreq_freq_attr_rw(screen_off_GPU_mhz);
+cpufreq_freq_attr_rw(disable_som_call_in_progress);
+cpufreq_freq_attr_rw(scaling_governor_screen_off);
+cpufreq_freq_attr_rw(scaling_sched_screen_off);
 
 #ifdef CONFIG_ARM_AUTO_HOTPLUG
 cpufreq_freq_attr_rw(enable_auto_hotplug);
@@ -762,7 +906,14 @@ static struct attribute *default_attrs[] = {
 	&scaling_driver.attr,
 	&scaling_available_governors.attr,
 	&scaling_setspeed.attr,
+	&freq_lock.attr,
 	&GPU_mV_table.attr,
+	&screen_off_scaling_enable.attr,
+	&screen_off_scaling_mhz.attr,
+	&screen_off_GPU_mhz.attr,
+	&disable_som_call_in_progress.attr,
+	&scaling_governor_screen_off.attr,
+	&scaling_sched_screen_off.attr,
 
 #ifdef CONFIG_ARM_AUTO_HOTPLUG
 	&enable_auto_hotplug.attr,
@@ -1853,6 +2004,9 @@ static int __cpufreq_set_policy(struct cpufreq_policy *data,
 
 	memcpy(&policy->cpuinfo, &data->cpuinfo,
 				sizeof(struct cpufreq_cpuinfo));
+	
+	if (vfreq_lock_tempOFF)
+		vfreq_lock = 1;
 
 	if (policy->min > data->max || policy->max < data->min) {
 		ret = -EINVAL;
@@ -2066,6 +2220,77 @@ out:
 	return ret;
 }
 #endif
+
+static void cpufreq_screen_resume(void)
+{
+	struct cpufreq_policy *policy = NULL;
+	int ret = -EINVAL;
+	unsigned int value;
+	
+	if (!cpu_is_offline(0) && scaling_governor_screen_off_sel_prev != NULL && scaling_governor_screen_off_sel_prev[0] != '\0')
+	{
+		policy = cpufreq_cpu_get(0);
+		store_scaling_governor(policy, scaling_governor_screen_off_sel_prev, sizeof(scaling_governor_screen_off_sel_prev));
+		pr_alert("cpufreq_gov_resume_gov: %s\n", scaling_governor_screen_off_sel_prev);
+	}
+	else
+		pr_alert("cpufreq_gov_resume_gov_DENIED: %s\n", scaling_governor_screen_off_sel_prev);
+		
+	if (Lscreen_off_scaling_enable == 1 && (!call_in_progress || Ldisable_som_call_in_progress == 0))
+	{
+		value = Lscreen_off_scaling_mhz_orig;
+	}	
+		
+}
+
+static void cpufreq_screen_suspend(void)
+{
+	struct cpufreq_policy *policy = NULL;
+	int ret = -EINVAL;
+	unsigned int value;
+
+	if (!cpu_is_offline(0) && scaling_governor_screen_off_sel != NULL && scaling_governor_screen_off_sel[0] != '\0')
+	{
+		policy = cpufreq_cpu_get(0);
+		ret = sscanf(policy->governor->name, "%15s", scaling_governor_screen_off_sel_prev);
+		if (ret == 1)
+		{
+			store_scaling_governor(policy, scaling_governor_screen_off_sel, sizeof(scaling_governor_screen_off_sel));
+			pr_alert("cpufreq_gov_suspend_gov: %s\n", scaling_governor_screen_off_sel);
+		}
+		else
+			pr_alert("cpufreq_gov_suspend_gov_DENIED1: %s\n", scaling_governor_screen_off_sel);
+	}
+	else
+		pr_alert("cpufreq_gov_suspend_gov_DENIED2: %s\n", scaling_governor_screen_off_sel);
+	
+	if (Lscreen_off_scaling_enable == 1 && (!call_in_progress || Ldisable_som_call_in_progress == 0))
+	{
+		value = Lscreen_off_scaling_mhz;
+		if (vfreq_lock == 1)
+		{
+			vfreq_lock = 0;
+			vfreq_lock_tempOFF = true;
+		}		
+	}
+		
+}
+
+void set_call_in_progress(bool state)
+{
+	call_in_progress = state;
+	//pr_alert("CALL IN PROGRESS: %d\n", state);
+}
+
+void set_screen_on_off_mhz(bool onoff)
+{
+	Lonoff = onoff;
+	if (Lonoff == 1)
+		cpufreq_screen_resume();
+	else
+		cpufreq_screen_suspend();
+}
+
 /**
  *	cpufreq_update_policy - re-evaluate an existing cpufreq policy
  *	@cpu: CPU which shall be re-evaluated
@@ -2120,6 +2345,11 @@ no_policy:
 	return ret;
 }
 EXPORT_SYMBOL(cpufreq_update_policy);
+void set_cur_sched(const char *name)
+{
+	unsigned int ret = -EINVAL;
+	ret = sscanf(name, "%15s", scaling_sched_screen_off_sel_prev);
+}
 
 static int __cpuinit cpufreq_cpu_callback(struct notifier_block *nfb,
 					unsigned long action, void *hcpu)
