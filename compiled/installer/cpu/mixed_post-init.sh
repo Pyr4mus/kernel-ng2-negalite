@@ -4,7 +4,7 @@
 SELINUX="Off"
 
 # Sleep Control
-SCREEN_OFF="Off"
+SCREEN_OFF="On"
 
 # CPU Settings ( If CPU_CONTROL is set to "On" )
 CPU_AWAKE_MAX="1944000"
