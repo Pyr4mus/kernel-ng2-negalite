@@ -193,7 +193,7 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 export KBUILD_BUILDHOST := $(SUBARCH)
 ARCH		?= arm
-CROSS_COMPILE	?= /usr/arm-cortex_a15-linux-gnueabihf-linaro_4.7.4/bin/arm-cortex_a15-linux-gnueabihf-
+CROSS_COMPILE	?= /usr/arm-cortex_a15-linux-gnueabihf-linaro_4.9.2/bin/arm-cortex_a15-linux-gnueabihf-
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
@@ -612,11 +612,12 @@ ifndef CONFIG_CC_STACKPROTECTOR
 KBUILD_CFLAGS += $(call cc-option, -fno-stack-protector)
 endif
 
-KBUILD_CFLAGS += $(call cc-disable-warning, array-bounds)
-
 # This warning generated too much noise in a regular build.
 # Use make W=1 to enable this warning (see scripts/Makefile.build)
 KBUILD_CFLAGS += $(call cc-disable-warning, unused-but-set-variable)
+
+#Disable aggressive-loop-optimizations due to bogus warnings during compile
+KBUILD_CFLAGS += $(call cc-disable-warning, aggressive-loop-optimizations)
 
 ifdef CONFIG_FRAME_POINTER
 KBUILD_CFLAGS	+= -fno-omit-frame-pointer -fno-optimize-sibling-calls
