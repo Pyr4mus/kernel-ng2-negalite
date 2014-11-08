@@ -715,6 +715,53 @@ static struct reserve_info apq8064_reserve_info __initdata = {
 	.paddr_to_memtype = apq8064_paddr_to_memtype,
 };
 
+static int apq8064_memory_bank_size(void)
+{
+	return 1<<29;
+}
+
+static void __init locate_unstable_memory(void)
+{
+	struct membank *mb = &meminfo.bank[meminfo.nr_banks - 1];
+	unsigned long bank_size;
+	unsigned long low, high;
+
+	bank_size = apq8064_memory_bank_size();
+	low = meminfo.bank[0].start;
+	high = mb->start + mb->size;
+
+	/* Check if 32 bit overflow occured */
+	if (high < mb->start)
+		high = -PAGE_SIZE;
+
+	low &= ~(bank_size - 1);
+
+	if (high - low <= bank_size)
+		goto no_dmm;
+
+#ifdef CONFIG_ENABLE_DMM
+	apq8064_reserve_info.low_unstable_address = mb->start -
+					MIN_MEMORY_BLOCK_SIZE + mb->size;
+	apq8064_reserve_info.max_unstable_size = MIN_MEMORY_BLOCK_SIZE;
+
+	apq8064_reserve_info.bank_size = bank_size;
+	pr_info("low unstable address %lx max size %lx bank size %lx\n",
+		apq8064_reserve_info.low_unstable_address,
+		apq8064_reserve_info.max_unstable_size,
+		apq8064_reserve_info.bank_size);
+	return;
+#endif
+no_dmm:
+	apq8064_reserve_info.low_unstable_address = high;
+	apq8064_reserve_info.max_unstable_size = 0;
+}
+
+static int apq8064_change_memory_power(u64 start, u64 size,
+	int change_type)
+{
+	return soc_change_memory_power(start, size, change_type);
+}
+
 static char prim_panel_name[PANEL_NAME_MAX_LEN];
 static char ext_panel_name[PANEL_NAME_MAX_LEN];
 
@@ -751,9 +798,22 @@ static void __init apq8064_reserve(void)
 	msm_reserve();
 }
 
+static void __init place_movable_zone(void)
+{
+#ifdef CONFIG_ENABLE_DMM
+	movable_reserved_start = apq8064_reserve_info.low_unstable_address;
+	movable_reserved_size = apq8064_reserve_info.max_unstable_size;
+	pr_info("movable zone start %lx size %lx\n",
+		movable_reserved_start, movable_reserved_size);
+#endif
+}
+
 static void __init apq8064_early_reserve(void)
 {
 	reserve_info = &apq8064_reserve_info;
+	locate_unstable_memory();
+	place_movable_zone();
+
 }
 #ifdef CONFIG_USB_EHCI_MSM_HSIC
 /* Bandwidth requests (zero) if no vote placed */
@@ -3218,6 +3278,20 @@ static void __init register_i2c_devices(void)
 	}
 }
 
+static void enable_ddr3_regulator(void)
+{
+	static struct regulator *ext_ddr3;
+
+	/* Use MPP7 output state as a flag for PCDDR3 presence. */
+	if (gpio_get_value_cansleep(PM8921_MPP_PM_TO_SYS(7)) > 0) {
+		ext_ddr3 = regulator_get(NULL, "ext_ddr3");
+		if (IS_ERR(ext_ddr3) || ext_ddr3 == NULL)
+			pr_err("Could not get MPP7 regulator\n");
+		else
+			regulator_enable(ext_ddr3);
+	}
+}
+
 static void enable_avc_i2c_bus(void)
 {
 	int avc_i2c_en_mpp = PM8921_MPP_PM_TO_SYS(8);
@@ -3337,7 +3411,7 @@ static void __init apq8064_common_init(void)
 			machine_is_mpq8064_dtv())) {
 		platform_add_devices(common_not_mpq_devices,
 			ARRAY_SIZE(common_not_mpq_devices));
-
+	enable_ddr3_regulator();
 		/* Add GSBI4 I2C Device for non-fusion3 platform */
 		if (socinfo_get_platform_subtype() !=
 					PLATFORM_SUBTYPE_SGLTE2) {
