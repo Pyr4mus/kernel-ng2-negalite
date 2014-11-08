@@ -84,6 +84,9 @@ static int pm_gpio_get(struct pm_gpio_chip *pm_gpio_chip, unsigned gpio)
 {
 	int	mode;
 
+	if (gpio >= pm_gpio_chip->gpio_chip.ngpio || pm_gpio_chip == NULL)
+		return -EINVAL;
+
 	/* Get gpio value from config bank 1 if output gpio.
 	   Get gpio value from IRQ RT status register for all other gpio modes.
 	 */
@@ -102,6 +105,9 @@ static int pm_gpio_set(struct pm_gpio_chip *pm_gpio_chip,
 	int	rc;
 	u8	bank1;
 	unsigned long flags;
+
+	if (gpio >= pm_gpio_chip->gpio_chip.ngpio || pm_gpio_chip == NULL)
+		return -EINVAL;
 
 	spin_lock_irqsave(&pm_gpio_chip->pm_lock, flags);
 	bank1 = PM_GPIO_WRITE
