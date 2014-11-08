@@ -1,5 +1,7 @@
 The Ultra Kernel Samepage Merging feature
 ----------------------------------------------
+/* Add 
+*/
 /*
  * Ultra KSM. Copyright (C) 2011-2012 Nai Xia
  *

@@ -14,6 +14,7 @@ do {									\
 //#define SRADIX_TREE_MAP_SHIFT	6
 //#define SRADIX_TREE_MAP_SIZE	(1UL << SRADIX_TREE_MAP_SHIFT)
 //#define SRADIX_TREE_MAP_MASK	(SRADIX_TREE_MAP_SIZE-1)
+//add
 
 struct sradix_tree_node {
 	unsigned int	height;		/* Height from the bottom */

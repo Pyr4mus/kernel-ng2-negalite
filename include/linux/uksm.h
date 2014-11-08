@@ -8,6 +8,7 @@
  */
 
 /* if !CONFIG_UKSM this file should not be compiled at all. */
+// add
 #ifdef CONFIG_UKSM
 
 #include <linux/bitops.h>
