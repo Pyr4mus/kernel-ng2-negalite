@@ -275,9 +275,9 @@ service thermal-engine /system/bin/thermal-engine
    group root
    disabled
 
-service mpdecision /system/bin/mpdecision --no_sleep --avg_comp
-   user root
-   disabled
+#service mpdecision /system/bin/mpdecision --no_sleep --avg_comp
+#   user root
+#   disabled
 
 service rf4ce /system/bin/rf4ce
    class main

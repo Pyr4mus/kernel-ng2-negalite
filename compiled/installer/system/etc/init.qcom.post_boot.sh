@@ -146,7 +146,7 @@ echo 10 > /sys/devices/platform/msm_sdcc.3/idle_timeout
 
 start thermald
 #start thermal-engine
-start mpdecision
+#start mpdecision
 
 #fastrpc permission setting
 #insmod /system/lib/modules/adsprpc.ko
