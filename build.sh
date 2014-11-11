@@ -228,16 +228,16 @@ kill $! 1>&1
 
 # Upload File After Compile
 if [ -e $INITRAMFS/negalite_kernel_NG2_r$REVISION.zip ]; then
-	echo " "
-	echo "**************************************************************"
-	echo "**************************************************************"
-	read -p "  Would You Like To Reboot The Device Into Recovery? <y/n> " prompt_1
-	echo "**************************************************************"
-	echo "**************************************************************"
-	echo " "
-	if [[ $prompt_1 == "y" || $prompt_1 == "Y" ]]; then
-		adb reboot recovery
-	fi
+#	echo " "
+#	echo "**************************************************************"
+#	echo "**************************************************************"
+#	read -p "  Would You Like To Reboot The Device Into Recovery? <y/n> " prompt_1
+#	echo "**************************************************************"
+#	echo "**************************************************************"
+#	echo " "
+#	if [[ $prompt_1 == "y" || $prompt_1 == "Y" ]]; then
+#		adb reboot recovery
+#	fi
 	
 	if [ -e $INITRAMFS/ftp.sh ]; then
 		URL="http://download.negalite.com/Negalite_S4_Kernel_NG2/negalite_kernel_NG2_r$REVISION.zip"

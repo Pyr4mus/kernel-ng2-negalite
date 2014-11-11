@@ -12,7 +12,7 @@ theme("ics");
 # Welcome Splash
 ###############################
 
-splash(4000, "nae");
+splash(4000, "ng2");
 
 ###############################
 # Font Size
