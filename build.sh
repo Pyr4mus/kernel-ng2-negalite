@@ -1,9 +1,9 @@
 #!/bin/bash
 
-REVISION="$(svn info http://kernel-ng2-negalite.googlecode.com/svn/ | grep "^Revision:" | cut -c 11-)"
+REVISION="git log --pretty=format:'%h' -n 1"
 
 CURDATE=`date "+%m-%d-%Y"`
-VERSION="-Negalite-S4-NG2-r$REVISION"
+VERSION="-Negalite-S4-NG2-$REVISION"
 
 PARENT=`readlink -f .`
 INITRAMFS=$PARENT/compiled
@@ -100,6 +100,7 @@ echo "**************************************************************"
 echo "**************************************************************"
 echo " "
 
+export CROSS_COMPILE=/usr/arm-cortex_a15-linux-gnueabihf-linaro_4.9.3/arm-cortex_a15-linux-gnueabihf-linaro_4.9.3/bin/arm-cortex_a15-linux-gnueabihf-
 export ARCH=arm
 
 make VARIANT_DEFCONFIG=jf_spr_defconfig nega_defconfig DEBUG_DEFCONFIG=jf_debug_defconfig SELINUX_DEFCONFIG=selinux_defconfig SELINUX_LOG_DEFCONFIG=selinux_log_defconfig

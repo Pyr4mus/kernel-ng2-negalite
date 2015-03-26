@@ -126,7 +126,7 @@ echo $CPU_GOV > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
 
 GOVERNOR=`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor`
 
-if [ $GOVERNOR = "ondemand" ]; then
+if [ $GOVERNOR = "ondemand" ] || [ $GOVERNOR = "badass" ]; then
 	echo $OND_SAMP_RATE > /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
 	echo $OND_UP_THRESH > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
 	echo $OND_DOWN_DIFF > /sys/devices/system/cpu/cpufreq/ondemand/down_differential
@@ -199,12 +199,10 @@ if [ $SCREEN_OFF = "On" ]; then
 			echo 1 > /sys/devices/system/cpu/cpu2/online
 			echo 1 > /sys/devices/system/cpu/cpu3/online
 			#echo $CPU_AWAKE_MAX > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
-			echo $GPU_FREQ_AWAKE > /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/max_gpuclk
 			echo $LOW_POWER_AWAKE > /sys/module/rpm_resources/enable_low_power/L2_cache
-			echo $LOW_POWER_AWAKE > /sys/module/rpm_resources/enable_low_power/pxo
+			#echo $LOW_POWER_AWAKE > /sys/module/rpm_resources/enable_low_power/pxo
 			echo $LOW_POWER_AWAKE > /sys/module/rpm_resources/enable_low_power/vdd_dig
-			echo $LOW_POWER_AWAKE > /sys/module/rpm_resources/enable_low_power/vdd_mem
-			setprop wifi.supplicant_scan_interval 90
+			#echo $LOW_POWER_AWAKE > /sys/module/rpm_resources/enable_low_power/vdd_mem
 			AWAKE=
 		fi
 
@@ -214,13 +212,11 @@ if [ $SCREEN_OFF = "On" ]; then
 			echo 0 > /sys/devices/system/cpu/cpu1/online
 			echo 0 > /sys/devices/system/cpu/cpu2/online
 			echo 0 > /sys/devices/system/cpu/cpu3/online
-			#echo $CPU_SLEEP_MAX > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq	
-			echo $GPU_FREQ_SLEEP > /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/max_gpuclk	
+			#echo $CPU_SLEEP_MAX > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq		
 			echo $LOW_POWER_SLEEP > /sys/module/rpm_resources/enable_low_power/L2_cache
-			echo $LOW_POWER_SLEEP > /sys/module/rpm_resources/enable_low_power/pxo
+			#echo $LOW_POWER_SLEEP > /sys/module/rpm_resources/enable_low_power/pxo
 			echo $LOW_POWER_SLEEP > /sys/module/rpm_resources/enable_low_power/vdd_dig
-			echo $LOW_POWER_SLEEP > /sys/module/rpm_resources/enable_low_power/vdd_mem
-			setprop wifi.supplicant_scan_interval 240
+			#echo $LOW_POWER_SLEEP > /sys/module/rpm_resources/enable_low_power/vdd_mem
 			SLEEPING=
 		fi		
 	done &)

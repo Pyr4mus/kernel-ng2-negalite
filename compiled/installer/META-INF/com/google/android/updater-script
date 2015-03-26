@@ -11,6 +11,11 @@ ui_print(" ");
 ui_print("@Removing Custom Kernel Files");
 delete("/system/lib/modules");
 delete("/system/app/com.ktoonsez.KTweaker.apk");
+delete("/system/bin/thermald");
+delete("/system/etc/init.qcom.post_boot.sh");
+delete("/system/etc/post-init.sh");
+delete("/system/etc/perf-boot.sh");
+delete("/system/etc/thermald.conf");
 ui_print("Done");
 set_progress(0.250);
 ui_print(" ");
@@ -50,7 +55,6 @@ if file_getprop("/tmp/aroma-data/performance.prop","selected.0") == "1" then
 	ui_print(" ");
 	ui_print("@Installing Low Performance Settings");
 	package_extract_file("cpu/battery_post-init.sh", "/system/etc/post-init.sh");
-	set_perm(0, 0, 0755, "/system/etc/init.qcom.post_boot.sh");
 	ui_print("Done");
 	run_program("/sbin/sleep", "1");
 endif;
@@ -59,7 +63,6 @@ if file_getprop("/tmp/aroma-data/performance.prop","selected.0") == "2" then
 	ui_print(" ");
 	ui_print("@Installing Mixed Performance Settings");
 	package_extract_file("cpu/mixed_post-init.sh", "/system/etc/post-init.sh");
-	set_perm(0, 0, 0755, "/system/etc/init.qcom.post_boot.sh");
 	ui_print("Done");
 	run_program("/sbin/sleep", "1");
 endif;
@@ -68,11 +71,15 @@ if file_getprop("/tmp/aroma-data/performance.prop","selected.0") == "3" then
 	ui_print(" ");
 	ui_print("@Installing High Performance Settings");
 	package_extract_file("cpu/performance_post-init.sh", "/system/etc/post-init.sh");
-	set_perm(0, 0, 0755, "/system/etc/init.qcom.post_boot.sh");
 	ui_print("Done");
 	run_program("/sbin/sleep", "1");
 endif;
-set_perm(0, 0, 0777, "/system/etc/post-init.sh");
+
+set_perm(0, 0, 0755, "/system/etc/init.qcom.post_boot.sh");
+set_perm(0, 0, 0755, "/system/etc/post-init.sh");
+set_perm(0, 0, 0755, "/system/etc/perf-boot.sh");
+set_perm(0, 0, 0755, "/system/etc/thermald.conf");
+set_perm(0, 0, 0755, "/system/bin/thermald");
 
 set_progress(0.625);
 
@@ -98,4 +105,3 @@ set_progress(1.0);
 ui_print(" ");
 ui_print("@Rebooting...");
 run_program("/tmp/reboot.sh");
-
