@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REVISION="git log --pretty=format:'%h' -n 1"
+REVISION="$(git log --pretty=format:'%h' -n 1)"
 
 CURDATE=`date "+%m-%d-%Y"`
 VERSION="-Negalite-S4-NG2-$REVISION"
